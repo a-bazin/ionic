@@ -2,6 +2,7 @@ import './ExploreContainer.css';
 
 interface ContainerProps {
   name: string;
+  age:number
 }
 
 const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
