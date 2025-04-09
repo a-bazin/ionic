@@ -10,7 +10,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { book, ellipse, person, personOutline, restaurant, restaurantOutline, square, triangle } from 'ionicons/icons';
+import { book, camera, ellipse, home, images, person, personOutline, restaurant, restaurantOutline, square, triangle } from 'ionicons/icons';
 import Tab1 from './pages/Home';
 import Tab2 from './pages/About';
 import Tab3 from './pages/Tab3';
@@ -48,6 +48,7 @@ import './theme/variables.css';
 import Home from './pages/Home';
 import Equipe from './pages/Equipe';
 import Todo from './pages/Todo';
+import User from './pages/User';
 
 setupIonicReact();
 
@@ -65,11 +66,14 @@ const App: React.FC = () => (
           <Route path="/tab3">
             <Tab3 />
           </Route>
-          
-          <Route path="/equipe">
-            <Equipe />
+          <Route path="/about">
+            <Tab2 />
           </Route>
-
+  
+          <Route path="/user">
+            <User />
+          </Route>
+  
 
           <Route exact path="/">
             <Redirect to="/tab1" />
@@ -77,22 +81,25 @@ const App: React.FC = () => (
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={restaurantOutline} />
+            <IonIcon aria-hidden="true" icon={home} />
             <IonLabel>Home</IonLabel>
           </IonTabButton>
-    
+
           <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={personOutline} />
-            <IonLabel>User</IonLabel>
+            <IonIcon aria-hidden="true" icon={images} />
+            <IonLabel>photo</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/equipe">
-            <IonIcon aria-hidden="true" icon={personOutline} />
-            <IonLabel>Team</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/todo">
+    
+          <IonTabButton tab="todo" href="/todo">
             <IonIcon aria-hidden="true" icon={book} />
             <IonLabel>TODO</IonLabel>
           </IonTabButton>
+
+          <IonTabButton tab="user" href="/user">
+            <IonIcon aria-hidden="true" icon={person} />
+            <IonLabel>User</IonLabel>
+          </IonTabButton>
+
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
