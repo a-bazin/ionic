@@ -1,24 +1,31 @@
-import { IonContent, IonHeader, IonPage, IonTabBar, IonTitle } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonPage, IonTabBar, IonTitle, IonToolbar } from "@ionic/react";
 import Register from "../components/user/Register";
 import Login from "../components/user/Login";
+import { useState } from "react";
+import "./User.css"
 
-const User:React.FC=()=>{
-
+const User: React.FC = () => {
+    const [activeForm, setActiveForm] = useState<string | null>(null);
     return (
         <IonPage>
             <IonHeader>
-                <IonTabBar>
-                    <IonTitle> Acceder à mon applkication</IonTitle>
-                </IonTabBar>
+                <IonToolbar>
+                    <IonTitle className="header-title">Acceder à mon application</IonTitle>
+                </IonToolbar>
             </IonHeader>
 
-            <IonContent>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus est magni enim tempora, distinctio in magnam voluptatibus aliquam? Laborum voluptatibus pariatur sunt, ullam sit eos hic distinctio enim! Iusto, labore?
-                Obcaecati sunt unde numquam aut totam dignissimos adipisci id illum veniam omnis voluptatibus provident rem nemo perferendis incidunt deserunt quis, excepturi itaque laborum? Possimus alias veniam necessitatibus, nihil voluptates quae.
-            
-            <Login/>
-            {/* <Register/> */}
-            
+            <IonContent className="page-container">
+                <h5 className="description-text">
+                    Lorem ipsum dolor sit, amet consectetur adipi
+                </h5>
+                <div className="buttons-container">
+                    <IonButton onClick={() => setActiveForm('login')}>Connexion</IonButton>
+                    <IonButton onClick={() => setActiveForm('register')}>Inscription</IonButton>
+                </div>
+                <div className="form-container">
+                    {activeForm === 'login' && <Login />}
+                    {activeForm === 'register' && <Register />}
+                </div>
             </IonContent>
         </IonPage>
     )
