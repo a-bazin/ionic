@@ -17,6 +17,8 @@ const Register: React.FC = () => {
     const [showAlert, setShowAlert] = useState(false);
     const navigate = useHistory();
 
+    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
     const hanbleSubmit = () => {
 
@@ -25,6 +27,18 @@ const Register: React.FC = () => {
         // Changez password par pwd dans la condition
         if (!nom || !prenom || !email || !pwd) {
             setAlertMessage("Veuillez remplir tous les champs!")
+            setShowAlert(true);
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            setAlertMessage("Veuillez entrer une adresse valide!")
+            setShowAlert(true)
+            return;
+        }
+
+        if (!passwordRegex.test(pwd)) {
+            setAlertMessage("Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
             setShowAlert(true);
             return;
         }

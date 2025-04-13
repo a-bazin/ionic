@@ -17,14 +17,8 @@ const Login: React.FC = () => {
     const hanbleSubmit = () => {
         console.log(pwd);
 
-        if (!email || !pwd) {
+        if (!email) {
             setAlertMessage("Vous êtes bien connecté");
-            setShowAlert(true);
-            return;
-        }
-
-        if (email != pwd) {
-            setAlertMessage("Erreur sur les identifiant de connexion");
             setShowAlert(true);
             return;
         }
@@ -36,12 +30,13 @@ const Login: React.FC = () => {
                 // Signed in 
                 const user = userCredential.user;
                 const userData = await getDoc(doc(db, "users", user.uid));
+                history.push("/profil")
 
                 console.log(userData);
 
                 if (userData.exists()) {
                     localStorage.setItem("user", JSON.stringify(userData.data()));
-                    history.push("/")
+                    history.push("/profil")
                 }
 
                 // ...

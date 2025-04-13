@@ -49,6 +49,8 @@ import Home from './pages/Home';
 import Equipe from './pages/Equipe';
 import Todo from './pages/Todo';
 import User from './pages/User';
+import Profil from './components/profil/Profil';
+import Login from './components/user/Login';
 
 setupIonicReact();
 
@@ -59,6 +61,9 @@ const App: React.FC = () => (
         <IonRouterOutlet>
           <Route exact path="/home">
             <Home />
+          </Route>
+          <Route exact path="/profil">
+            <Profil />
           </Route>
           <Route exact path="/todo">
             <Todo />
@@ -72,6 +77,9 @@ const App: React.FC = () => (
 
           <Route path="/user">
             <User />
+          </Route>
+          <Route path="/login">
+            <Login />
           </Route>
 
 
