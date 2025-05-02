@@ -63,8 +63,9 @@ const App: React.FC = () => (
             <Home />
           </Route>
           <Route exact path="/profil">
-            <Profil />
+              <Profil />
           </Route>
+          
           <Route exact path="/todo">
             <Todo />
           </Route>

@@ -1,13 +1,20 @@
 ///LES ATTRIBUTS: email, password, prenom, nom, adresse
 
-import { IonAlert, IonButton, IonInput, IonItem } from "@ionic/react";
+import { IonAlert, IonButton, IonInput, IonItem, IonLabel, IonText } from "@ionic/react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth, db } from "../../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import { useHistory } from "react-router";
 
-const Register: React.FC = () => {
+
+interface RegisterProps {
+  onRegisterSuccess: () => void;
+}
+
+// const Register: React.FC = () => {
+const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
+
     const [prenom, setPrenom] = useState("");
     const [nom, setNom] = useState("");
     const [email, setEmail] = useState("");
@@ -19,6 +26,9 @@ const Register: React.FC = () => {
 
     const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+      const [confirmPwd, setConfirmPwd] = useState("");
+  const [adresse, setAdresse] = useState("");
 
     const hanbleSubmit = () => {
 
@@ -43,6 +53,11 @@ const Register: React.FC = () => {
             return;
         }
 
+           if (pwd !== confirmPwd) {
+      setAlertMessage("Les mots de passe ne correspondent pas.");
+      setShowAlert(true);
+      return;
+    }
         //Ajout utilisateur avec createUserWithEmailAndPassword
         createUserWithEmailAndPassword(auth, email, pwd)
             .then((userCredential) => {
@@ -52,18 +67,37 @@ const Register: React.FC = () => {
                     prenom,
                     nom,
                     email,
+                    adresse,
                     uid: user.uid
                 })
                 setAlertMessage("Vous êtes bien inscrit")
-                setShowAlert(true);
+                // setShowAlert(true);
+                // Appel de la fonction passée en props
+                onRegisterSuccess();
             })
             .catch((error) => {
+        console.log(error);
 
-                const errorMessage = error.message;
-                setAlertMessage(errorMessage);
-                setShowAlert(true);
+        switch (error.code) {
+            case "auth/email-already-in-use":
+                setAlertMessage("Cette adresse e-mail est déjà utilisée.");
+                break;
+            case "auth/invalid-email":
+                setAlertMessage("L'adresse e-mail est invalide.");
+                break;
+            case "auth/weak-password":
+                setAlertMessage("Le mot de passe est trop faible (minimum 6 caractères).");
+                break;
+            case "auth/missing-password":
+                setAlertMessage("Veuillez entrer un mot de passe.");
+                break;
+            default:
+                setAlertMessage("Une erreur est survenue. Veuillez réessayer.");
+        }
 
-            });
+        
+    });
+    setShowAlert(true);
     }
 
     return (
@@ -97,6 +131,21 @@ const Register: React.FC = () => {
 
                 />
             </IonItem>
+            <IonText color={passwordRegex.test(pwd) ? "success" : "danger"}>
+          {pwd && (
+            <p style={{ paddingLeft: "15px", fontSize: "12px" }}>
+              {passwordRegex.test(pwd) ? "Mot de passe valide" : "Doit contenir 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 spécial"}
+            </p>
+          )}
+        </IonText>
+        <IonItem>
+          <IonLabel position="floating">Confirmer votre mot de passe *</IonLabel>
+          <IonInput type="password" value={confirmPwd} onIonChange={(e) => setConfirmPwd(e.detail.value!)} />
+        </IonItem>
+        <IonItem>
+          <IonLabel position="floating">Adresse *</IonLabel>
+          <IonInput value={adresse} onIonChange={(e) => setAdresse(e.detail.value!)} />
+        </IonItem>
 
             <IonButton onClick={hanbleSubmit} expand="full">S'inscrire</IonButton>
             <IonAlert

@@ -1,6 +1,10 @@
-///LES ATTRIBUTS: email, password, prenom, nom, adresse
-
-import { IonAlert, IonButton, IonInput, IonItem } from "@ionic/react";
+import {
+  IonAlert,
+  IonButton,
+  IonInput,
+  IonItem,
+  IonLoading,
+} from "@ionic/react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth, db } from "../../firebaseConfig";
@@ -8,75 +12,89 @@ import { doc, getDoc } from "firebase/firestore";
 import { useHistory } from "react-router";
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState("");
-    const [pwd, setPwd] = useState("");
-    const history = useHistory();
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [pwd, setPwd] = useState("");
+  const history = useHistory();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Ajout du spinner
 
-    const hanbleSubmit = () => {
-        console.log(pwd);
-
-        if (!email) {
-            setAlertMessage("Vous êtes bien connecté");
-            setShowAlert(true);
-            return;
-        }
-
-        signInWithEmailAndPassword(auth, email, pwd)
-            .then(async (userCredential) => {
-                setAlertMessage("Veuillez remplir tous les champs!")
-                setShowAlert(true);
-                // Signed in 
-                const user = userCredential.user;
-                const userData = await getDoc(doc(db, "users", user.uid));
-                history.push("/profil")
-
-                console.log(userData);
-
-                if (userData.exists()) {
-                    localStorage.setItem("user", JSON.stringify(userData.data()));
-                    history.push("/profil")
-                }
-
-                // ...
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                setAlertMessage(error.message);
-            });
-
+  const handleSubmit = () => {
+    if (!email || !pwd) {
+      setAlertMessage("Veuillez remplir tous les champs !");
+      setShowAlert(true);
+      return;
     }
 
-    return (
-        <>
-            <IonItem>
-                <IonInput label="Votre email" labelPlacement="floating"
-                    placeholder="Saisir votre email"
-                    value={email} onIonChange={(e) => setEmail(e.detail.value!)}
+    setIsLoading(true); // Affiche le spinner
+    signInWithEmailAndPassword(auth, email, pwd)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        const userData = await getDoc(doc(db, "users", user.uid));
 
-                />
-            </IonItem>
+        if (userData.exists()) {
+            history.push("/profil");
+         
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        if (error.code === "auth/invalid-credential") {
+          setAlertMessage("Login ou mot de passe incorrect");
+          setShowAlert(true);
+        }
+      });
+  };
 
-            <IonItem>
-                <IonInput label="Votre mot de passe" labelPlacement="floating"
-                    placeholder="Saisir votre mot de passe" type="password"
-                    value={pwd} onIonInput={(e) => setPwd(e.detail.value!)}
+  return (
+    <>
+      <IonItem>
+        <IonInput
+          label="Votre email"
+          labelPlacement="floating"
+          placeholder="Saisir votre email"
+          value={email}
+          onIonChange={(e) => setEmail(e.detail.value!)}
+        />
+      </IonItem>
 
-                />
-            </IonItem>
+      <IonItem>
+        <IonInput
+          label="Votre mot de passe"
+          labelPlacement="floating"
+          type="password"
+          placeholder="Saisir votre mot de passe"
+          value={pwd}
+          onIonInput={(e) => setPwd(e.detail.value!)}
+        />
+      </IonItem>
 
-            <IonButton onClick={hanbleSubmit} expand="full">Se connecter</IonButton><IonAlert
-                isOpen={showAlert}
-                message={alertMessage}
-                buttons={[{
-                    text: "ok",
-                    handler: () => {
-                        setShowAlert(false);
-                    }
-                }]}
-            />
-        </>
-    )
-}
+      <IonButton onClick={handleSubmit} expand="full">
+        Se connecter
+      </IonButton>
+
+      <IonAlert
+  isOpen={showAlert}
+  message={alertMessage}
+  buttons={[
+    {
+      text: "OK",
+      handler: () => {
+        setShowAlert(false);
+        if (alertMessage === "Vous êtes bien connecté !") {
+          history.push("/profil");
+        }
+      },
+    },
+  ]}
+/>
+      <IonLoading
+        isOpen={isLoading}
+        message="Connexion en cours..."
+        spinner="crescent"
+      />
+    </>
+  );
+};
+
 export default Login;
