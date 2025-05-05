@@ -43,19 +43,19 @@ export function usePhotoGallery() {
         quality: 100,
         });
 
-        // const fileName = Date.now() + '.jpeg';
-        // const newPhotos = [
-        // {
-        //     filepath: fileName,
-        //     webviewPath: photo.webPath,
-        // },
-        // ...photos,
-        // ];
-        // setPhotos(newPhotos);
-
         const fileName = Date.now() + '.jpeg';
-        const savedFileImage = await savePicture(photo, fileName);
-        const newPhotos = [savedFileImage, ...photos];
+        const newPhotos = [
+        {
+            filepath: fileName,
+            webviewPath: photo.webPath,
+        },
+        ...photos,
+        ];
+        setPhotos(newPhotos);
+
+        // const fileName = Date.now() + '.jpeg';
+        // const savedFileImage = await savePicture(photo, fileName);
+        // const newPhotos = [savedFileImage, ...photos];
         //setPhotos(newPhotos);
 
         Preferences.set({ key: PHOTO_STORAGE, value: JSON.stringify(newPhotos) });

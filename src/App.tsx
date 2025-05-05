@@ -46,8 +46,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import Home from './pages/Home';
-import Equipe from './pages/Equipe';
-import Todo from './pages/Todo';
+
 import User from './pages/User';
 import Profil from './components/profil/Profil';
 import Login from './components/user/Login';
@@ -66,9 +65,6 @@ const App: React.FC = () => (
               <Profil />
           </Route>
           
-          <Route exact path="/todo">
-            <Todo />
-          </Route>
           <Route path="/tab3">
             <Tab3 />
           </Route>
@@ -97,11 +93,6 @@ const App: React.FC = () => (
           <IonTabButton tab="tab3" href="/tab3">
             <IonIcon aria-hidden="true" icon={images} />
             <IonLabel>photo</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton tab="todo" href="/todo">
-            <IonIcon aria-hidden="true" icon={book} />
-            <IonLabel>TODO</IonLabel>
           </IonTabButton>
 
           <IonTabButton tab="user" href="/user">

@@ -21,14 +21,14 @@ import { getFirestore } from "firebase/firestore";
 // };
 
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyApu5AX40MvcaLr2-8Pyu2qf7LnDfPeX4U",
-  authDomain: "fir-2ecba.firebaseapp.com",
-  projectId: "fir-2ecba",
-  storageBucket: "fir-2ecba.firebasestorage.app",
-  messagingSenderId: "671580705959",
-  appId: "1:671580705959:web:86997da15b621df6c53782",
-  measurementId: "G-EH8ZTZVR3S"
+  apiKey: "AIzaSyAo3PLjqixmpQLs2jhA78yuvHyEle4E9Gk",
+  authDomain: "dwwmmut.firebaseapp.com",
+  projectId: "dwwmmut",
+  storageBucket: "dwwmmut.firebasestorage.app",
+  messagingSenderId: "796935752806",
+  appId: "1:796935752806:web:97e7142671c6a85cd6b1a7"
 };
 
 // Initialize Firebase

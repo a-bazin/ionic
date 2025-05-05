@@ -5,6 +5,7 @@ import { camera } from 'ionicons/icons';
 
 
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
+import Create from '../components/product/Create';
 
 const Tab3: React.FC = () => {
    const { photos, takePhoto } = usePhotoGallery();
@@ -22,7 +23,8 @@ const Tab3: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <IonGrid>
+<Create></Create>
+        {/* <IonGrid>
           <IonRow>
             {photos.map((photo, index) => (
               <IonCol size="6" key={photo.filepath}>
@@ -36,7 +38,7 @@ const Tab3: React.FC = () => {
           <IonFabButton onClick={() => takePhoto()}>
             <IonIcon icon={camera}></IonIcon>
           </IonFabButton>
-        </IonFab>
+        </IonFab> */}
       </IonContent>
     </IonPage>
   );

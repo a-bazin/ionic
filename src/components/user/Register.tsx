@@ -76,7 +76,7 @@ const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
                 onRegisterSuccess();
             })
             .catch((error) => {
-        console.log(error);
+        
 
         switch (error.code) {
             case "auth/email-already-in-use":
