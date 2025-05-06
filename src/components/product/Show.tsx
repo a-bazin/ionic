@@ -40,13 +40,12 @@ const Show: React.FC<{ productId: string }> = ({ productId }) => {
           });
         } else {
           setMessage("Produit non trouvé.");
-          setShowAlert(true);
         }
       } catch (error) {
         console.error("Erreur lors du chargement du produit :", error);
         setMessage("Erreur lors du chargement.");
-        setShowAlert(true);
-      }
+    }
+    setShowAlert(true);
     };
 
     fetchPost();
@@ -74,7 +73,7 @@ const Show: React.FC<{ productId: string }> = ({ productId }) => {
           </IonCardHeader>
 
           <Achat product = {product}/>
-          
+
         </IonCard>
       ) : (
         <IonLabel>Chargement...</IonLabel>
