@@ -1,9 +1,11 @@
-import { IonButton, IonCol, IonGrid, IonImg, IonInput, IonItem, IonRow } from "@ionic/react";
+import { IonButton, IonCol, IonGrid, IonImg, IonInput, IonItem, IonRow, IonToast } from "@ionic/react";
 import { base64FromPath, usePhotoGallery } from "../../hooks/usePhotoGallery";
 import { useState } from "react";
 import { auth, db } from "../../firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import axios from "axios";
+import { useHistory } from "react-router";
+import { Preferences } from "@capacitor/preferences";
 
 
 
@@ -14,6 +16,14 @@ const Create: React.FC = () => {
    const [ description, setDescription] = useState("");
    const [ prix, setPrix] = useState("");
 
+   /**********Message ****** */
+   const [ message, setMessage] = useState("");
+   const [ showMessage, setShowMessage] = useState(false);
+   
+const history = useHistory();
+
+
+
    const handleSumbit =async() => {
     // Recuperation du user connecté
     const user = auth.currentUser;
@@ -23,14 +33,15 @@ const Create: React.FC = () => {
        photos.map(async (photo, index) => {
         try {
 
-                // APPEL DU BACKEND
-                //Installation de AXIOS : npm i axios
-                await axios.post('http://localhost:3000/uploads',{
-                    base64Image: await base64FromPath(photo.webviewPath!),
-                    photo : photo.filepath
-                })
+            // APPEL DU BACKEND
+            //Installation de AXIOS : npm i axios
+            await axios.post('http://localhost:3000/uploads',{
+                // base64Image: await base64FromPath(photo.webviewPath!),
+                base64Image: photo.webviewPath!,
+                photo : photo
+            })
 
-                return photo;
+            return photo.filepath;
             } catch (error) {
             return null;
             
@@ -38,17 +49,30 @@ const Create: React.FC = () => {
        })
     )
     
-    /********************************** */
-console.log(fileNames);
-
-    await addDoc(collection(db, "product"), {
+    /**********Ajout du produit dans Firebase ********* */
+   try {
+     await addDoc(collection(db, "product"), {
         nom,
         description,
         prix,
         vendeur: user?.uid,
         photo: fileNames.filter((photo) => photo !== null)
     });
-        
+
+    setMessage("Produit créé");
+      // Attendre 2 secondes avant de rediriger
+      setTimeout(() => {
+         history.replace("/home"); // Redirection après 2 secondes
+      }, 2000); // 2000ms = 2 secondes
+      
+    history.replace('/home');
+   } catch (error) {
+    console.error(error);
+      setMessage("Erreur lors de la publication.");
+   }
+      setShowMessage(true); // Afficher le toast
+
+    /**********Ajout du produit dans Firebase ********* */
    }
 
    return (
@@ -72,7 +96,7 @@ console.log(fileNames);
             ></IonInput>
         </IonItem>
 
-        <IonButton  onClick={() => takePhoto()}>Prendre une photo</IonButton>
+        <IonButton expand="full"  onClick={() => takePhoto()}>Prendre une photo</IonButton>
         <IonGrid>
           <IonRow>
             {photos.map((photo, index) => (
@@ -83,8 +107,14 @@ console.log(fileNames);
           </IonRow>
         </IonGrid>
 
-        <IonButton  onClick={() => handleSumbit()}>Enregistrer le produit</IonButton>
+        <IonButton expand="full" color="success"  onClick={() => handleSumbit()}>Enregistrer le produit</IonButton>
 
+        <IonToast
+            isOpen={showMessage}
+            message={message}
+            duration={3000} // Durée en ms avant disparition
+            onDidDismiss={() => setShowMessage(false)} // Ferme le toast après le délai
+            />
     </>
    );
 }

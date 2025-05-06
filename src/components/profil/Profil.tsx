@@ -49,6 +49,7 @@ const Profil: React.FC = () => {
         setAlertMessage("Vous êtes déconnecté !")
         setShowAlert(true);
         history.push("/user")
+         window.location.reload();
     };
 
     const handleDeleteAccount = async () => {
