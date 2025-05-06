@@ -50,6 +50,8 @@ import Home from './pages/Home';
 import User from './pages/User';
 import Profil from './components/profil/Profil';
 import Login from './components/user/Login';
+import Show from './components/product/Show';
+import Detail from './pages/Detail';
 
 setupIonicReact();
 
@@ -79,7 +81,10 @@ const App: React.FC = () => (
             <Login />
           </Route>
 
-
+          <Route path="/detail/:id">
+            <Detail />
+          </Route>
+          
           <Route exact path="/">
             <Redirect to="/home" />
           </Route>

@@ -56,7 +56,11 @@ console.log(products);
                 ></IonImg>
 
 
-                <IonButton routerLink={`/show/${product.id}`}> Voir le produit</IonButton>
+{product.id && (
+  <IonButton routerLink={`/detail/${product.id}`} routerDirection="forward">
+    Voir le produit
+  </IonButton>
+)}
 
             </>
             )

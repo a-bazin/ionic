@@ -1,17 +1,94 @@
-import { useParams } from "react-router";
+import { useEffect, useState } from "react";
+import {
+  IonAlert,
+  IonCard,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonChip,
+  IonIcon,
+  IonImg,
+  IonLabel,
+} from "@ionic/react";
 
-const Show:React.FC = () =>{
+import { doc, getDoc } from "firebase/firestore";
+import { pricetagOutline } from "ionicons/icons";
 
-    //RECUPERATION DE L'ID DU PRODUIT
-    const { id } = useParams<{id:string}>();
+import { db } from "../../firebaseConfig";
+import Achat from "./Achat";
 
+const Show: React.FC<{ productId: string }> = ({ productId }) => {
+  const url = "http://localhost:3000/public/";
 
-    //FAIRE UNE REQUETE POUR RECUPER EN FONCTION DE SON ID
+  const [showAlert, setShowAlert] = useState(false);
+  const [message, setMessage] = useState("");
+  const [product, setProduct] = useState<any>(null);
 
-    return (
+  console.log(productId);
+  
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const docRef = doc(db, "product", productId); 
+        const docSnap = await getDoc(docRef);
 
-        <></>
-    )
-}
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProduct({
+            id: docSnap.id,
+            ...data,
+          });
+        } else {
+          setMessage("Produit non trouvé.");
+          setShowAlert(true);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement du produit :", error);
+        setMessage("Erreur lors du chargement.");
+        setShowAlert(true);
+      }
+    };
+
+    fetchPost();
+  }, [productId]);
+
+  return (
+    <>
+      {product ? (
+        <IonCard key={product.id}>
+          <IonImg
+            src={
+              product.photo?.length > 0 && product.photo[0]
+                ? `${url}${product.photo[0].filepath}`
+                : "/noImage.jpeg"
+            }
+          />
+          <IonCardHeader>
+            <IonCardTitle>{product.nom}</IonCardTitle>
+            <IonCardSubtitle>
+              <IonChip>
+                <IonIcon icon={pricetagOutline} color="primary"></IonIcon>
+                <IonLabel>{product.prix} €</IonLabel>
+              </IonChip>
+            </IonCardSubtitle>
+          </IonCardHeader>
+
+          <Achat product = {product}/>
+          
+        </IonCard>
+      ) : (
+        <IonLabel>Chargement...</IonLabel>
+      )}
+
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header="Erreur"
+        message={message}
+        buttons={["OK"]}
+      />
+    </>
+  );
+};
 
 export default Show;
