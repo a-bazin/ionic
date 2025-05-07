@@ -7,7 +7,7 @@ import { home } from "ionicons/icons";
 const List: React.FC = () => {
  const [products , setProducts] = useState<any[]>([])
 
- const url = "http://localhost:3000/public/";
+ const url = "http://192.168.1.174:3000/public/";
 
     useEffect(() =>{
         const sql  = query(collection(db, "product"));

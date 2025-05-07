@@ -35,13 +35,13 @@ const history = useHistory();
 
             // APPEL DU BACKEND
             //Installation de AXIOS : npm i axios
-            await axios.post('http://localhost:3000/uploads',{
+            await axios.post('http://192.168.1.174:3000/uploads',{
                 // base64Image: await base64FromPath(photo.webviewPath!),
-                base64Image: photo.webviewPath!,
+                base64Image: await base64FromPath(photo.webviewPath!),
                 photo : photo
             })
 
-            return photo.filepath;
+            return photo;
             } catch (error) {
             return null;
             

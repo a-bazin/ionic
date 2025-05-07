@@ -52,10 +52,15 @@ import Profil from './components/profil/Profil';
 import Login from './components/user/Login';
 import Show from './components/product/Show';
 import Detail from './pages/Detail';
+import useFCM from './hooks/UseFCM';
 
 setupIonicReact();
 
-const App: React.FC = () => (
+const App: React.FC = () => {
+  useFCM();
+  
+  return(
+  
   <IonApp>
     <IonReactRouter>
       <IonTabs>
@@ -84,7 +89,7 @@ const App: React.FC = () => (
           <Route path="/detail/:id">
             <Detail />
           </Route>
-          
+
           <Route exact path="/">
             <Redirect to="/home" />
           </Route>
@@ -109,6 +114,6 @@ const App: React.FC = () => (
       </IonTabs>
     </IonReactRouter>
   </IonApp>
-);
+)}
 
 export default App;

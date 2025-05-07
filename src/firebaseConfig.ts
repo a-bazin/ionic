@@ -22,6 +22,12 @@ import { getFirestore } from "firebase/firestore";
 
 
 // Your web app's Firebase configuration
+
+/******************************
+ * 
+ * NB: A changer avec votre Firebase
+ * 
+ ***************************/
 const firebaseConfig = {
   apiKey: "AIzaSyAo3PLjqixmpQLs2jhA78yuvHyEle4E9Gk",
   authDomain: "dwwmmut.firebaseapp.com",

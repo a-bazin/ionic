@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "796935752806",
+    "project_id": "dwwmmut",
+    "storage_bucket": "dwwmmut.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796935752806:android:ca2f04b8636e56e9d6b1a7",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpaM1aVDUgEpv4tdPBgpW7IHrZIz2r6zg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
