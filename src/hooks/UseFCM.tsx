@@ -30,7 +30,7 @@ PushNotifications.requestPermissions().then(result => {
   PushNotifications.addListener('registration', async (token) => {
    console.log('Token FCM :', token.value);
    try {
-    await axios.post('http://192.168.1.174:3000/save-token', {
+    await axios.post('http://localhost:3000/save-token', {
      userId: user.uid,
      token: token.value
     });

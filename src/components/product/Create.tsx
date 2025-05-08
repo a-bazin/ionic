@@ -35,7 +35,7 @@ const history = useHistory();
 
             // APPEL DU BACKEND
             //Installation de AXIOS : npm i axios
-            await axios.post('http://192.168.1.174:3000/uploads',{
+            await axios.post('http://localhost:3000/uploads',{
                 // base64Image: await base64FromPath(photo.webviewPath!),
                 base64Image: await base64FromPath(photo.webviewPath!),
                 photo : photo
@@ -56,7 +56,8 @@ const history = useHistory();
         description,
         prix,
         vendeur: user?.uid,
-        photo: fileNames.filter((photo) => photo !== null)
+        photo: fileNames.filter((photo) => photo !== null),
+        isSold: false
     });
 
     setMessage("Produit créé");

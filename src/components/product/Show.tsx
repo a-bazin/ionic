@@ -18,7 +18,7 @@ import { db } from "../../firebaseConfig";
 import Achat from "./Achat";
 
 const Show: React.FC<{ productId: string }> = ({ productId }) => {
-  const url = "http://192.168.1.174:3000/public/";
+  const url = "http://localhost:3000/public/";
 
   const [showAlert, setShowAlert] = useState(false);
   const [message, setMessage] = useState("");

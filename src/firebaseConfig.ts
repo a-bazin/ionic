@@ -29,12 +29,12 @@ import { getFirestore } from "firebase/firestore";
  * 
  ***************************/
 const firebaseConfig = {
-  apiKey: "AIzaSyAo3PLjqixmpQLs2jhA78yuvHyEle4E9Gk",
-  authDomain: "dwwmmut.firebaseapp.com",
-  projectId: "dwwmmut",
-  storageBucket: "dwwmmut.firebasestorage.app",
-  messagingSenderId: "796935752806",
-  appId: "1:796935752806:web:97e7142671c6a85cd6b1a7"
+  apiKey: "AIzaSyBWf2bUqHSll0KqbDwCGeoHo_1DZuYLpTQ",
+  authDomain: "ionicprojectbackend.firebaseapp.com",
+  projectId: "ionicprojectbackend",
+  storageBucket: "ionicprojectbackend.appspot.com", 
+  messagingSenderId: "967384798863",
+  appId: "1:967384798863:web:140f73e8206dfde5ae82fa"
 };
 
 // Initialize Firebase

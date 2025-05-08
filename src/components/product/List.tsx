@@ -7,7 +7,7 @@ import { home } from "ionicons/icons";
 const List: React.FC = () => {
  const [products , setProducts] = useState<any[]>([])
 
- const url = "http://192.168.1.174:3000/public/";
+ const url = "http://localhost:3000/public/";
 
     useEffect(() =>{
         const sql  = query(collection(db, "product"));
@@ -37,37 +37,54 @@ return () => unsubscribe();
     },[])
 
 console.log(products);
+const markAsSold = async (productId: string) => {
+    try {
+      await fetch('http://localhost:3000/mark-as-sold', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId}),
+      });
 
+      // Optionnel : afficher une alerte ou notifier l'utilisateur ici
+    } catch (error) {
+      console.error('Erreur lors du marquage comme vendu :', error);
+    }
+  };
 
-    return (
-        <>
-           { products.length === 0 ? (
-            <IonLabel> Aucun produit trouvé </IonLabel>
-           ) : (
-               products.map((product, index) => (
-                   <>
-                   
+  return (
+    <>
+      {products.length === 0 ? (
+        <IonLabel> Aucun produit trouvé </IonLabel>
+      ) : (
+        products
+          .filter((p) => !p.isSold) // Ne pas afficher les produits vendus
+          .map((product, index) => (
+            <div key={index}>
               <IonImg
-                src={product.photo?.length > 0 && product.photo[0] ? 
-                    `${url}${product.photo[0].filepath}`
-                     : 
-                    "https://placehold.co/400"}
-                alt="The Wisconsin State Capitol building in Madison, WI at night"
-                ></IonImg>
+                src={
+                  product.photo?.length > 0 && product.photo[0]
+                    ? `${url}${product.photo[0].filepath}`
+                    : "https://placehold.co/400"
+                }
+                alt="Image du produit"
+              />
 
+              {product.id && (
+                <IonButton routerLink={`/detail/${product.id}`} routerDirection="forward">
+                  Voir le produit
+                </IonButton>
+              )}
 
-{product.id && (
-  <IonButton routerLink={`/detail/${product.id}`} routerDirection="forward">
-    Voir le produit
-  </IonButton>
-)}
-
-            </>
-            )
-        )
-           )}
-        </>
-    )
-}
+              <IonButton color="warning" onClick={() => markAsSold(product.id)}>
+                Marquer comme vendu
+              </IonButton>
+            </div>
+          ))
+      )}
+    </>
+  );
+};
 
 export default List;

@@ -59,6 +59,7 @@ const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
       return;
     }
         //Ajout utilisateur avec createUserWithEmailAndPassword
+        console.log("Données envoyées à Firebase :", email, pwd);
         createUserWithEmailAndPassword(auth, email, pwd)
             .then((userCredential) => {
                 // Signed up 
