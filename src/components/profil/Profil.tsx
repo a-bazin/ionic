@@ -1,142 +1,244 @@
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton,
-    IonItem, IonLabel, IonAlert, IonGrid, IonRow, IonCol,
-    IonItemDivider,
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonInput,
+  IonButton,
+  IonItem,
+  IonLabel,
+  IonAlert,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonList,
+  IonItemDivider,
+  IonBadge,
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig";
-import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-
+interface Sale {
+  id: string;
+  productName: string;
+  isSeen: boolean;
+}
 
 const Profil: React.FC = () => {
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const history = useHistory();
+  const { user } = useAuth();
+  const [sales, setSales] = useState<Sale[]>([]);
 
-    const [prenom, setPrenom] = useState("");
-    const [nom, setNom] = useState("");
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
-    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(`http://localhost:3000/sales?userId=${user.uid}`)
+        .then((res) => {
+          console.log("Ventes récupérées :", res.data);
+          setSales(res.data);
+        })
+        .catch((err) => console.error("Erreur récupération ventes :", err));
+    }
+  }, [user]);
 
-    const history = useHistory();
+  useEffect(() => {
+    const main = document.getElementById("profil-main");
+    main?.focus();
 
-    //Recuperation du user connecté
-     const { user } = useAuth();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, []);
 
-    const handleUpdateProfile = async () => {
-        try {
-            if (!auth.currentUser) return;
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            await updateDoc(userRef, {
-                prenom,
-                nom
-            })
+  const markAsViewed = (saleId: string) => {
+    axios
+      .post("http://localhost:3000/mark-sale-as-seen", { saleId })
+      .then(() => {
+        setSales((prev) =>
+          prev.map((sale) =>
+            sale.id === saleId ? { ...sale, isSeen: true } : sale
+          )
+        );
+      })
+      .catch((err) => console.error("Erreur MAJ vue :", err));
+  };
 
-            setAlertMessage("Profil mis à jour avec succès!")
-        } catch (error: any) {
-            setAlertMessage("Erreur lors de la mis à jour" + error.message);
-        }
-        setShowAlert(true);
-    };
+  const handleUpdateProfile = async () => {
+    try {
+      if (!auth.currentUser) return;
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userRef, {
+        prenom,
+        nom,
+      });
 
-    const handleLogout = async () => {
-        await auth.signOut();
+      setAlertMessage("Profil mis à jour avec succès!");
+    } catch (error: any) {
+      setAlertMessage("Erreur lors de la mise à jour : " + error.message);
+    }
+    setShowAlert(true);
+  };
 
-         localStorage.clear(); 
-        setAlertMessage("Vous êtes déconnecté !")
-        setShowAlert(true);
-        history.push("/user")
-         window.location.reload();
-    };
+  const handleLogout = async () => {
+    await auth.signOut();
 
-    const handleDeleteAccount = async () => {
-        if (!auth.currentUser) return;
+    localStorage.clear();
+    setAlertMessage("Vous êtes déconnecté !");
+    setShowAlert(true);
+    history.push("/user");
+    window.location.reload();
+  };
 
-        try {
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            await deleteDoc(userRef);
+  const handleDeleteAccount = async () => {
+    if (!auth.currentUser) return;
 
-            await auth.currentUser.delete();
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await deleteDoc(userRef);
 
-            setAlertMessage("Compte supprimé avec succès!")
-            setShowAlert(true);
-            history.push("/user");
+      await auth.currentUser.delete();
 
-        } catch (error: any) {
-            setAlertMessage("Erreur lors de la supprission" + error.message);
-            setShowAlert(true)
-        }
-    };
+      setAlertMessage("Compte supprimé avec succès!");
+      setShowAlert(true);
+      history.push("/user");
+    } catch (error: any) {
+      setAlertMessage("Erreur lors de la supprission : " + error.message);
+      setShowAlert(true);
+    }
+  };
 
-    // console.log('***currentUser', user);
+  return (
+    <IonPage>
+      {user ? (
+        <>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>Mon Profil</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding" id="profil-main">
+            <IonItem>
+              <IonLabel position="floating">Prénom</IonLabel>
+              <IonInput
+                value={prenom}
+                onIonChange={(e) => setPrenom(e.detail.value!)}
+              />
+            </IonItem>
+            <IonItem>
+              <IonLabel position="floating">Nom</IonLabel>
+              <IonInput
+                value={nom}
+                onIonChange={(e) => setNom(e.detail.value!)}
+              />
+            </IonItem>
+            <IonItem>
+              <IonLabel position="floating">Email</IonLabel>
+              <IonInput value={user.email} disabled />
+            </IonItem>
 
-    return (
-        <IonPage>
-            {user ? (
-                <>
-                    <IonHeader>
-                        <IonToolbar>
-                            <IonTitle>Mon Profil</IonTitle>
-                        </IonToolbar>
-                    </IonHeader>
-                    <IonContent className="ion-padding">
-                        <>
-                            <IonItem>
-                                <IonLabel position="floating">Prénom</IonLabel>
-                                <IonInput value={user.prenom} onIonChange={(e) => setPrenom(e.detail.value!)} />
-                            </IonItem>
-                            <IonItem>
-                                <IonLabel position="floating">Nom</IonLabel>
-                                <IonInput value={user.nom} onIonChange={(e) => setNom(e.detail.value!)} />
-                            </IonItem>
-                            <IonItem>
-                                <IonLabel position="floating">Email</IonLabel>
-                                <IonInput value={user.email} disabled />
-                            </IonItem>
+            <IonGrid>
+              <IonRow>
+                <IonCol>
+                  <IonButton
+                    expand="full"
+                    onClick={handleUpdateProfile}
+                    color="primary"
+                  >
+                    Enregistrer
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton
+                    expand="full"
+                    onClick={handleLogout}
+                    color="warning"
+                  >
+                    Se Déconnecter
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton
+                    expand="full"
+                    onClick={() => setShowDeleteAlert(true)}
+                    color="danger"
+                  >
+                    Supprimer
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+            <IonList>
+              <IonItemDivider>
+                <IonLabel>Mes ventes</IonLabel>
+              </IonItemDivider>
 
-                            <IonGrid>
-                                <IonRow>
-                                    <IonCol>
-                                        <IonButton expand="full" onClick={handleUpdateProfile} color="primary">Enregistrer</IonButton>
-                                    </IonCol>
-                                    <IonCol>
-                                        <IonButton expand="full" onClick={handleLogout} color="warning">Se Déconnecter</IonButton>
-                                    </IonCol>
-                                    <IonCol>
-                                        <IonButton expand="full" onClick={() => setShowDeleteAlert(true)} color="danger">Supprimer</IonButton>
-                                    </IonCol>
-                                </IonRow>
-                            </IonGrid>
-                        </>
-                        <IonAlert
-                            isOpen={showAlert}
-                            message={alertMessage}
-                            buttons={["OK"]}
-                            onDidDismiss={() => setShowAlert(false)}
-                        />
+              {sales.length === 0 ? (
+                <IonItem>
+                  <IonLabel>Aucune vente trouvée</IonLabel>
+                </IonItem>
+              ) : (
+                sales.map((sale) => (
+                  <IonItem key={sale.id}>
+                    <IonLabel>
+                      {sale.productName}
+                      {!sale.isSeen && (
+                        <IonBadge color="danger" className="ion-margin-start">
+                          Non vue
+                        </IonBadge>
+                      )}
+                    </IonLabel>
+                    {!sale.isSeen && (
+                      <IonButton
+                        slot="end"
+                        onClick={() => markAsViewed(sale.id)}
+                      >
+                        Marquer comme vue
+                      </IonButton>
+                    )}
+                  </IonItem>
+                ))
+              )}
+            </IonList>
 
-                        <IonAlert
-                            isOpen={showDeleteAlert}
-                            header="Confirmation"
-                            message="Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
-                            buttons={[
-                                { text: "Annuler", role: "cancel" },
-                                { text: "Supprimer", handler: handleDeleteAccount }
-                            ]}
-                            onDidDismiss={() => setShowDeleteAlert(false)}
-                        />
-                    </IonContent>
-                </>
-            ) : (
-                <IonContent>
-                    <p>Il faut être connecté pour accéder à cette page profil</p>
-                    <IonButton expand="full" href="/user" color="primary">Se connecter</IonButton> </IonContent>
-            )}
-        </IonPage>
-    );
+            <IonAlert
+              isOpen={showAlert}
+              message={alertMessage}
+              buttons={["OK"]}
+              onDidDismiss={() => setShowAlert(false)}
+            />
+
+            <IonAlert
+              isOpen={showDeleteAlert}
+              header="Confirmation"
+              message="Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+              buttons={[
+                { text: "Annuler", role: "cancel" },
+                { text: "Supprimer", handler: handleDeleteAccount },
+              ]}
+              onDidDismiss={() => setShowDeleteAlert(false)}
+            />
+          </IonContent>
+        </>
+      ) : (
+        <IonContent className="ion-padding">
+          <p>Il faut être connecté pour accéder à cette page profil</p>
+          <IonButton expand="full" href="/user" color="primary">
+            Se connecter
+          </IonButton>
+        </IonContent>
+      )}
+    </IonPage>
+  );
 };
 
 export default Profil;

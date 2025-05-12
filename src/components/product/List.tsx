@@ -1,55 +1,71 @@
-import { collection, doc, getDoc, getDocs, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../firebaseConfig";
-import { IonButton, IonIcon, IonImg, IonItem, IonLabel, IonList } from "@ionic/react";
-import { home } from "ionicons/icons";
+import { IonButton, IonImg, IonLabel } from "@ionic/react";
+import { useAuth } from "../context/AuthContext"; 
 
 const List: React.FC = () => {
- const [products , setProducts] = useState<any[]>([])
+  const { user } = useAuth();
+  const [products, setProducts] = useState<any[]>([]);
 
- const url = "http://localhost:3000/public/";
+  const url = "http://localhost:3000/public/";
 
-    useEffect(() =>{
-        const sql  = query(collection(db, "product"));
-        const unsubscribe = onSnapshot(sql, (snapshot) => {
+  useEffect(() => {
+    const sql = query(collection(db, "product"));
+    const unsubscribe = onSnapshot(sql, (snapshot) => {
+      const products = snapshot.docs.map((doc) => {
+        const data = doc.data();
 
-            const products = snapshot.docs.map((doc) =>{
-                const data = doc.data();
-                
-            /********** RECUP PHOTO FROM BACK */
-            //  const photos = Array.isArray(data.photo) && data.photo.length  ?
-            //  data.photo.filter((photoName) => photoName) 
-            //  .map( (photoName) => 'http://localhost:3000/public/' +photoName.filepath) : 
-            //  [];
-             
-             /********** RECUP PHOTO FROM BACK */
-             
-                return {
-                    id: doc.id,
-                    // photos,
-                    ...data
-                }
-            })
+        /********** RECUP PHOTO FROM BACK */
+        //  const photos = Array.isArray(data.photo) && data.photo.length  ?
+        //  data.photo.filter((photoName) => photoName)
+        //  .map( (photoName) => 'http://localhost:3000/public/' +photoName.filepath) :
+        //  [];
 
-            setProducts(products)
-});   
-return () => unsubscribe();
-    },[])
+        /********** RECUP PHOTO FROM BACK */
 
-console.log(products);
-const markAsSold = async (productId: string) => {
-    try {
-      await fetch('http://localhost:3000/mark-as-sold', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId}),
+        return {
+          id: doc.id,
+          // photos,
+          ...data,
+        };
       });
 
-      // Optionnel : afficher une alerte ou notifier l'utilisateur ici
+      setProducts(products);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  console.log(products);
+
+  const markAsSold = async (productId: string, productName: string) => {
+    try {
+      await fetch("http://localhost:3000/mark-as-sold", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+          userId: user?.uid,
+        }),
+      });
+
+      await fetch("http://localhost:3000/sales", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+          productName, 
+          userId: user?.uid, 
+        }),
+      });
+
+      console.log("✅ Vente ajoutée avec succès !");
     } catch (error) {
-      console.error('Erreur lors du marquage comme vendu :', error);
+      console.error("❌ Erreur lors du marquage et ajout :", error);
     }
   };
 
@@ -59,7 +75,7 @@ const markAsSold = async (productId: string) => {
         <IonLabel> Aucun produit trouvé </IonLabel>
       ) : (
         products
-          .filter((p) => !p.isSold) // Ne pas afficher les produits vendus
+          .filter((p) => !p.isSold) 
           .map((product, index) => (
             <div key={index}>
               <IonImg
@@ -72,12 +88,18 @@ const markAsSold = async (productId: string) => {
               />
 
               {product.id && (
-                <IonButton routerLink={`/detail/${product.id}`} routerDirection="forward">
+                <IonButton
+                  routerLink={`/detail/${product.id}`}
+                  routerDirection="forward"
+                >
                   Voir le produit
                 </IonButton>
               )}
 
-              <IonButton color="warning" onClick={() => markAsSold(product.id)}>
+              <IonButton
+                color="warning"
+                onClick={() => markAsSold(product.id, product.nom)}
+              >
                 Marquer comme vendu
               </IonButton>
             </div>
